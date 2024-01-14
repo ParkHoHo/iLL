@@ -11,11 +11,13 @@ Maybe i studied...</br>
    - [Sandbox](/iOS%20Security/iOS%20App%20Sandbox.md)
 
 2. FRIDA
+   </br>
    Analyze : [FRIDA](https://github.com/frida/frida.git)
 
    - How to work in Kernel or app
 
 3. Jailbreak Tools
+   </br>
    followed are studied for analyze [palera1n](https://github.com/palera1n/palera1n.git)
 
    - Evasi0n
