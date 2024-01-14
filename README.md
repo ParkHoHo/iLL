@@ -1,7 +1,9 @@
 # iLL
 
-For memorize iOS security.</br></br>
-Maybe i studied...</br>
+> iLL means iOS low-level
+
+</br>
+  Maybe i studied...</br>
 
 1. iOS security
 
