@@ -6,8 +6,8 @@ Maybe i studied...</br>
 1. iOS security
 
    - [MACF](/iOS%20Security/Mandatory%20Access%20Control%20Framework.md)
-   - AMFI
-   - Codesigning
+   - [AMFI](/iOS%20Security/AppleMobileFileIntegrity.md)
+   - [Codesigning](/iOS%20Security/Code%20Sign.md)
    - Sandbox
 
 2. FRIDA
