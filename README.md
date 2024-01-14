@@ -5,7 +5,7 @@ Maybe i studied...</br>
 
 1. iOS security
 
-   - [MACF](../iLL/iOS%20Security/Mandatory%20Access%20Control%20Framework.md)
+   - [MACF](/iOS%20Security/Mandatory%20Access%20Control%20Framework.md)
    - AMFI
    - Codesigning
    - Sandbox
