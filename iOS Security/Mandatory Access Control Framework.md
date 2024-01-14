@@ -1,34 +1,35 @@
 > 사용자가 제어할 수 있는 커널 기능의 모든 측면(강제되는 정책)
 
 MACF는 결정을 `정책 모듈` 이라는 특수한 커널 확장 기능들에게 맡긴다.
-# 👉🏻  용어 
-MACF에 대해 설명하기 전에 먼저 `DAC`와 `MAC`의 ==차이점==을 알아야한다. `DAC`은 `Discretionary Access Control` 의 약자로서 ==사용자가 사용권한==을 ==사용자 마음대로 설정할 수 있는 모델==이다. 이에 반해 `MAC`은 `Mandatory Access Control Framework`의 약자로 ==관리자가 사용권한을 설정하고 사용자는 그 설정된 권한을 따라야 하는 모델==이다. 
+
+# 👉🏻 용어
+
+MACF에 대해 설명하기 전에 먼저 `DAC`와 `MAC`의 차이점을 알아야한다. `DAC`은 `Discretionary Access Control` 의 약자로서 사용자가 사용권한을 사용자 마음대로 설정할 수 있는 모델이다. 이에 반해 `MAC`은 `Mandatory Access Control Framework`의 약자로 관리자가 사용권한을 설정하고 사용자는 그 설정된 권한을 따라야 하는 모델이다.
 
 MAC 모델을 `프레임워크화` 한 것을 `MACF`라고 할 수 있다. 즉, 애플이 직접 커널영역에서 제작하여 배포한 것이다. 뿐만 아니라 프레임워크화로 인해 집중적으로 분석해야 하는 동작들을 프레임워크에 등록할 수 있다. 이를 애플에서는 `커널확장 기능에 의해 커널로부터 적절하게 분리된다고 표현한다.`
 
-MACF는 앞서 말했듯이 프레임워크다. 프레임워크 안에서 등록된 정책(확장기능)들이 있다. 이들을 호출하게 되고 그 결정에 따라 MACF는 동작을 허용해야할지 말아야할지를 결정하게 된다. 
+MACF는 앞서 말했듯이 프레임워크다. 프레임워크 안에서 등록된 정책(확장기능)들이 있다. 이들을 호출하게 되고 그 결정에 따라 MACF는 동작을 허용해야할지 말아야할지를 결정하게 된다.
 
 > 즉, MACF는 정책결정을 하는 프레임워크를 의미하고, 프레임워크안에 등록된 정책들이 커널에게 줄 수 있는 확장기능을 말한다.
 
-![[MACF.excalidraw]]
+![img](../property/MACF.png)
 
-> [!info]
-> 애플은 MAC 모델을 따르고 있는데 이로 인해 관리자인 애플만이 이 정책을 만들고 수정할 수 있다.
+> 애플은 MAC 모델을 따르고 있는데 이로 인해 관리자인 `애플만이` 이 정책을 만들고 수정할 수 있다.
 
 ```
 ❯ kextstat | grep -B 1 dsep                                                                                                                             ─╯
-Executing: /usr/bin/kmutil showloaded
-No variant specified, falling back to release
-    1  215 0                  0          0          com.apple.kpi.bsd (23.2.0) E245D804-1FA3-31E2-90BC-B4DF75B2129E <>
-    2   11 0                  0          0          com.apple.kpi.dsep (23.2.0) E245D804-1FA3-31E2-90BC-B4DF75B2129E <>
+
+    com.apple.kpi.bsd
+    com.apple.kpi.dsep
 ```
 
 https://github.com/excitedplus1s/jtool2
-# 👉🏻  MACF 정책
+
+# 👉🏻 MACF 정책
+
 MACF 정책 등록은 다음의 과정으로 진행된다.
 
-![[MACF_policy.excalidraw]]
-
+![img](../property/MACF-policy.png)
 
 그렇다면 mac_policy_conf 구조체는 어떻게 구성되어 있을까 ?
 이는 ios와 macos의 원조격인 xnu 의 소스코드를 보면 확인할 수 있다.
@@ -68,17 +69,18 @@ struct mac_policy_conf {
 };
 ```
 
-위의 코드에서 볼 수 있듯이 `mac_policy_conf`는 10개의 항목을 가진 구조체이다. 
-- mpc_name : 정책 이름
-- mpc_fullname : full name
-- mpc_labelnames : 정책이 적용되려고 하는 레이블 네임스페이스. Label이 없을 경우에는 NULL, 있을 경우 슬롯에 저장.
-- mpc_labelname_count : Label 네임스페이스 수
-- mpc_ops : 정책이 적용되는 동작 지정
-- mpc_loadtime_flags: loadtime_flag
-- mpc_field_off : label이 저장되는 슬롯 offset
-- mpc_runtime_flags : runtime_flag
-- mpc_list : List refer
-- mpc_data : 정책 모듈 데이터
+위의 코드에서 볼 수 있듯이 `mac_policy_conf`는 10개의 항목을 가진 구조체이다.
+
+- `mpc_name` : 정책 이름
+- `mpc_fullname` : full name
+- `mpc_labelnames` : 정책이 적용되려고 하는 레이블 네임스페이스. Label이 없을 경우에는 NULL, 있을 경우 슬롯에 저장.
+- `mpc_labelname_count` : Label 네임스페이스 수
+- `mpc_ops` : 정책이 적용되는 동작 지정
+- `mpc_loadtime_flags`: loadtime_flag
+- `mpc_field_off` : label이 저장되는 슬롯 offset
+- `mpc_runtime_flags` : runtime_flag
+- `mpc_list` : List refer
+- `mpc_data` : 정책 모듈 데이터
 
 위의 10가지를 정의 및 초기화한 후 mac_policy_register를 호출해야 한다.
 여기서 mac_policy_register는 다음과 같다.
@@ -95,7 +97,7 @@ int     mac_policy_register(struct mac_policy_conf *mpc,
     mac_policy_handle_t *handlep, void *xd);
 ```
 
-이 mac_policy_conf는 MAC_POLICY_SET 메크로에ㅓ 사용이 되는데 MAC_POLICY_SET는 다음과 같다.
+이 mac_policy_conf는 MAC_POLICY_SET 메크로에서 사용이 되는데 MAC_POLICY_SET는 다음과 같다.
 
 ```header
 #define MAC_POLICY_SET(handle, mpops, mpname, mpfullname, lnames, lcount, slot, lflags, rflags) \
@@ -133,13 +135,15 @@ int     mac_policy_register(struct mac_policy_conf *mpc,
 ```
 
 MAC_POLICY_SET를 분석해보자!
+
 1. 먼저 mac_policy_conf에서 정의된 변수들을 재선언하고 있다.
-2. 그 후에 kmod_start, kmod_stop이라는 메소드를 선언하고 있다. 
-3. kmod_start와 kmod_stop 메소드를 자세히 들여다보면, 
-   mac_policy_register와 mac_policy_unregister를 호출하여 정책을 등록하거나, 
+2. 그 후에 kmod_start, kmod_stop이라는 메소드를 선언하고 있다.
+3. kmod_start와 kmod_stop 메소드를 자세히 들여다보면,
+   mac_policy_register와 mac_policy_unregister를 호출하여 정책을 등록하거나,
    등록해제하는 동작을 한다.
 
 AMFI 전체 코드
+
 ```header
 
 void FUN_fffffff028eef900(void)
@@ -176,7 +180,7 @@ void FUN_fffffff028eef900(void)
   undefined8 uStack_60;
   undefined8 uStack_58;
   long local_48;
-  
+
   local_48 = *(long *)PTR_DAT_fffffff027ac2f20;
   uVar3 = FUN_fffffff02832d084();
   FUN_fffffff027d85270();
@@ -335,13 +339,12 @@ LAB_fffffff028eeff28:
 }
 ```
 
-
-
-AMFI 전체 코드는 다음과 같다. 
-위의 코드는 iphone15 kenrenlcache를 disassembling 한 후 다시 디컴파일 한 코드이다. 
+AMFI 전체 코드는 다음과 같다.
+위의 코드는 iphone15 kenrenlcache를 disassembling 한 후 다시 디컴파일 한 코드이다.
 이때 소스코드 마지막에서 `FUN_fffffff028465690("\"Cannot unload AMFI - policy is not dynamic\\n\" @%s:%d");`의 소스코드를 확인할 수 있었고, 이를 통해 AMFI의 정책은 동적으로 Load됨을 확인할 수 있었다.
 
 mac_policy.h에서 mac_policy_ops 구조체는 다음과 같이 정의되어 있다.
+
 ```header
 /*
  * Policy module operations.
@@ -737,12 +740,11 @@ mpo_audit_check_postselect_t            *mpo_audit_check_postselect;
 };
 ```
 
-# 👉🏻  MACF 설정
-다음은 Kernel_bootstrap 메소드에서 일어나는 과정이다.
-bootstrap은 부팅시 가장 먼저 시작되는 초기화 과정으로서, 
-시스템 및 초기 스레드 생성과 관련된 작업을 수행합니다.
+# 👉🏻 MACF 설정
 
-[[MACF_Settings.excalidraw]]
+다음은 Kernel_bootstrap 메소드에서 일어나는 과정이다.
+bootstrap은 부팅시 가장 먼저 시작되는 초기화 과정으로서,
+시스템 및 초기 스레드 생성과 관련된 작업을 수행한다.
 
 ```
 /*
@@ -864,7 +866,7 @@ kernel_bootstrap_thread(void)
 
 #if CONFIG_ECC_LOGGING
 	ecc_log_init();
-#endif 
+#endif
 
 #if HYPERVISOR
 	hv_support_init();
@@ -958,7 +960,7 @@ kernel_bootstrap_thread(void)
 	/*
 	 *  Finalize protections on statically mapped pages now that comm page mapping is established.
 	 */
-	arm_vm_prot_finalize(PE_state.bootArgs); 
+	arm_vm_prot_finalize(PE_state.bootArgs);
 #endif
 
 #if CONFIG_SCHED_SFI
@@ -1025,17 +1027,18 @@ kernel_bootstrap_thread(void)
 
 ```
 
-# 👉🏻  MACF 콜아웃
-MACF의 콜아웃 방식에는 두가지 종류가 있다. 
-이를 bsd에서는 `mac_proc_check_map_anon` 과 `mac_file_check_mmap`으로 구분한다. 
+# 👉🏻 MACF 콜아웃
+
+MACF의 콜아웃 방식에는 두가지 종류가 있다.
+이를 bsd에서는 `mac_proc_check_map_anon` 과 `mac_file_check_mmap`으로 구분한다.
 (bsd/kern/kern_mman.c)
 mac_proc_check_map_anon은 익명매핑을, mac_file_check_mmap은 파일 매핑을 의미한다.
 
-**<center>*mac_object_opType_opName*</center>**
+**<center>_mac_object_opType_opName_</center>**
 
-object에는 약 20개가 있다. 
+object에는 약 20개가 있다.
 
-- bpddesc 
+- bpddesc
 - cred
 - file
 - proc
@@ -1053,6 +1056,7 @@ object에는 약 20개가 있다.
 - kext
 
 onType의 종류로는 2개가 있다.(?)
+
 - check
 - notify
 
@@ -1060,6 +1064,7 @@ onName은 허용하고 싶은 동작이름을 의미한다.
 
 MACF설계방식에는 플래그를 저장하는 방식도 사용된다.
 다음은 설정된 flag를 man.c에서 가져온 것이다.
+
 ```
 #if DEBUG
 #define SECURITY_MAC_CTLFLAGS (CTLFLAG_RW | CTLFLAG_LOCKED)
@@ -1079,6 +1084,7 @@ MACF설계방식에는 플래그를 저장하는 방식도 사용된다.
 ```
 
 다음은 enfore flag가 설정된 MIB이다.
+
 > 여기서 MIB는 Mach Interface Builder의 약자로서 사용된다. 즉, MacOS의 하위 시스템인 Mach 커널과 관련된 인터페이스나 서비스를 구축하는데 사용된 도구들이다.
 
 ```bash
@@ -1100,12 +1106,13 @@ security.mac.amfi.launch_constraints_cc_types_enforced: 15
 security.mac.qtn.sandbox_enforce: 1
 ```
 
-위의 값들은 iOS4.3까지 루트 권한이 있는 경우 설정이 가능했다. 
-> 대표적으로 vnode_enforce와 proc_enfore가 있다. vnode_enforce는 파일시스템의 노드에 대한 접근 제어 정책을 강제하는 설정. proc_enforce는 프로세스에 대한 접근 제어를 강제하는 설정. 이 두가지를 이용해서 위의 enforce 플래그를 강제로 변경하여 탈옥하였음. 
+위의 값들은 iOS4.3까지 루트 권한이 있는 경우 설정이 가능했다.
+
+> 대표적으로 vnode_enforce와 proc_enfore가 있다. vnode_enforce는 파일시스템의 노드에 대한 접근 제어 정책을 강제하는 설정. proc_enforce는 프로세스에 대한 접근 제어를 강제하는 설정. 이 두가지를 이용해서 위의 enforce 플래그를 강제로 변경하여 탈옥하였음.
 
 이로 인해 애플에서는 `#ifdef` 를 이용해서 변수를 정의하였음. 이는 위의 man.c에서 확인할 수 있었음.
 
-다음으로는 MACF의 가장 큰 특징을 보여주는 `MAC_CHECK`에 대해 보고자한다. 
+다음으로는 MACF의 가장 큰 특징을 보여주는 `MAC_CHECK`에 대해 보고자한다.
 MAC_CHECK은 /security/mac_internals.c 에 정의되어 있다.
 정의는 다음과 같다.
 
@@ -1147,12 +1154,6 @@ MAC_CHECK은 /security/mac_internals.c 에 정의되어 있다.
 } while (0)
 ```
 
-위의 훅에서 ` mac_error_select` 메소드 사용이 존재한다. 이는 두가지 오류값을 비교해서 특정오류코드가 다른 오류코드를 우선시하는지 결정하는 코드이다. 따라서 오류가 성공보다 우선시되는데, 이로 인해 MACF정책에 오류가 한가지라도 나오게되면 error를 보이는 이유이다. 
+위의 훅에서 ` mac_error_select` 메소드 사용이 존재한다. 이는 두가지 오류값을 비교해서 특정오류코드가 다른 오류코드를 우선시하는지 결정하는 코드이다. 따라서 오류가 성공보다 우선시되는데, 이로 인해 MACF정책에 오류가 한가지라도 나오게되면 error를 보이는 이유이다.
 
-
-# 👉🏻  expose_task
-
-![[expose_task.excalidraw]]
-
-# 👉🏻 다음장...
-![[Code Sign]]
+# 👉🏻 expose_task
