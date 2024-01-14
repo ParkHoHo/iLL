@@ -8,7 +8,7 @@ Maybe i studied...</br>
    - [MACF](/iOS%20Security/Mandatory%20Access%20Control%20Framework.md)
    - [AMFI](/iOS%20Security/AppleMobileFileIntegrity.md)
    - [Codesigning](/iOS%20Security/Code%20Sign.md)
-   - Sandbox
+   - [Sandbox](/iOS%20Security/iOS%20App%20Sandbox.md)
 
 2. FRIDA
 
